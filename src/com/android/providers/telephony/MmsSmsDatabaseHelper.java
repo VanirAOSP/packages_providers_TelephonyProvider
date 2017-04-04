@@ -1499,7 +1499,7 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
             }
             db.beginTransaction();
             try {
-                upgradeDatabaseToVersion68(db);
+                upgradeDatabaseToAOSPVersion65(db);
                 db.setTransactionSuccessful();
             } catch (Throwable ex) {
                 Log.e(TAG, ex.getMessage(), ex);
@@ -1874,10 +1874,6 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
     private void upgradeDatabaseToAOSPVersion64(SQLiteDatabase db) {
         db.execSQL("ALTER TABLE " + SmsProvider.TABLE_RAW +" ADD COLUMN message_body TEXT");
     }
-
-    private void upgradeDatabaseToVersion68(SQLiteDatabase db) {
-        db.execSQL("ALTER TABLE " + SmsProvider.TABLE_RAW + " ADD COLUMN display_originating_addr TEXT");
-    }
     private void checkAndUpdateSmsTable(SQLiteDatabase db) {
         try {
             db.query(SmsProvider.TABLE_SMS, new String[] {"priority"}, null, null, null, null,
@@ -1913,6 +1909,10 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
                         + Threads.NOTIFICATION + " INTEGER DEFAULT 0");
             }
         }
+    }
+
+    private void upgradeDatabaseToAOSPVersion65(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE " + SmsProvider.TABLE_RAW + " ADD COLUMN display_originating_addr TEXT");
     }
 
     @Override
