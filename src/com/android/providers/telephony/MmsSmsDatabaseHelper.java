@@ -929,7 +929,10 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
                    "sub_id INTEGER DEFAULT " + SubscriptionManager.INVALID_SUBSCRIPTION_ID + ", " +
                    "pdu TEXT," + // the raw PDU for this part
                    "deleted INTEGER DEFAULT 0," + // bool to indicate if row is deleted
-                   "message_body TEXT);"); // message body
+                   "message_body TEXT," + // message body
+                   "display_originating_addr TEXT);"
+                   // email address if from an email gateway, otherwise same as address
+        );
 
         db.execSQL("CREATE TABLE attachments (" +
                    "sms_id INTEGER," +
@@ -1489,6 +1492,21 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
             } finally {
                 db.endTransaction();
             }
+            // fall through
+         case 66:
+            if (currentVersion <= 66) {
+                return;
+            }
+            db.beginTransaction();
+            try {
+                upgradeDatabaseToVersion67(db);
+                db.setTransactionSuccessful();
+            } catch (Throwable ex) {
+                Log.e(TAG, ex.getMessage(), ex);
+                break;
+            } finally {
+                db.endTransaction();
+            }
 
             return;
         }
@@ -1855,6 +1873,10 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
 
     private void upgradeDatabaseToAOSPVersion64(SQLiteDatabase db) {
         db.execSQL("ALTER TABLE " + SmsProvider.TABLE_RAW +" ADD COLUMN message_body TEXT");
+    }
+
+    private void upgradeDatabaseToVersion67(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE " + SmsProvider.TABLE_RAW + " ADD COLUMN display_originating_addr TEXT");
     }
     private void checkAndUpdateSmsTable(SQLiteDatabase db) {
         try {
