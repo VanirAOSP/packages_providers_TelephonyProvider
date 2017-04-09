@@ -1499,7 +1499,7 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
             }
             db.beginTransaction();
             try {
-                upgradeDatabaseToAOSPVersion65(db);
+                upgradeDatabaseToVersion68(db);
                 db.setTransactionSuccessful();
             } catch (Throwable ex) {
                 Log.e(TAG, ex.getMessage(), ex);
@@ -1911,7 +1911,7 @@ public class MmsSmsDatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    private void upgradeDatabaseToAOSPVersion65(SQLiteDatabase db) {
+    private void upgradeDatabaseToVersion68(SQLiteDatabase db) {
         db.execSQL("ALTER TABLE " + SmsProvider.TABLE_RAW + " ADD COLUMN display_originating_addr TEXT");
     }
 
